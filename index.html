@@ -148,7 +148,8 @@ render();
 const pdvMarket=M.find(media=>media.id==='pdv-mercado');
 const pdvCities=['Campo Mourão','Assis Chateaubriand','Cianorte','Goioerê','Ivaiporã','Pitanga','Ubiratã'];
 if(pdvMarket){
-  pdvMarket.multiVariantSelection=true;
+  pdvMarket.multiVariantSelection=false;
+  pdvMarket.pdvPackage={label:'Ativação completa - 6 formatos',value:25000};
   const position=M.indexOf(pdvMarket);
   M.splice(position,1,...pdvCities.map(city=>({...pdvMarket,id:`pdv-mercado-${city.toLowerCase().replace(/[^a-z0-9]+/g,'-')}`,city})));
 }
@@ -259,23 +260,26 @@ let openConfigMediaId='';
 const mediaSelections={};
 const galleryIndexes={};
 const renderBaseDeck=render;
-const mediaSelection=media=>mediaSelections[media.id]||(mediaSelections[media.id]={term:0,qty:1,variant:0,variants:[],service:0});
+const mediaSelection=media=>mediaSelections[media.id]||(mediaSelections[media.id]={term:0,qty:1,variant:0,variants:[],service:0,package:false});
 const extraItems=(media,selection)=>{
   const extras=[];
   if(media.serviceOptions)extras.push(media.serviceOptions[selection.service]||media.serviceOptions[0]);
   if(media.installationFee)extras.push(['Instalação por veículo',media.installationFee]);
   return extras;
 };
-const selectionTotal=(media,selection)=>{
-  const period=media.periods[selection.term]||media.periods[0];
-  return (period[2]*period[1]+extraItems(media,selection).reduce((total,extra)=>total+extra[1],0))*selection.qty;
+const selectionCosts=(media,selection)=>{
+  if(media.pdvPackage)return {media:media.pdvPackage.value,production:0,total:media.pdvPackage.value};
+  const period=media.periods[selection.term]||media.periods[0],quantity=selection.qty;
+  const mediaTotal=period[2]*period[1]*quantity,productionTotal=extraItems(media,selection).reduce((total,extra)=>total+extra[1],0)*quantity;
+  return {media:mediaTotal,production:productionTotal,total:mediaTotal+productionTotal};
 };
+const selectionTotal=(media,selection)=>selectionCosts(media,selection).total;
 const selectionName=(media,selection)=>{
-  const variantName=media.variants?.[selection.variant];
+  const variantName=media.pdvPackage?.label||media.variants?.[selection.variant];
   const serviceName=media.serviceOptions?.[selection.service]?.[0];
   return [media.name,variantName,serviceName].filter(Boolean).join(' - ');
 };
-const proposalRows=entries=>entries.length?entries.map(entry=>`<tr><td>${entry.name}</td><td>${entry.city}</td><td>${entry.period}</td><td>${entry.qty}</td><td>${fmt(entry.total)}</td></tr>`).join(''):'<tr><td colspan="5" class="empty">Selecione as mídias e inclua as opções para montar a proposta.</td></tr>';
+const proposalRows=entries=>entries.length?entries.map(entry=>`<tr><td>${entry.name}</td><td>${entry.city}</td><td>${entry.period}</td><td>${entry.qty}</td><td>${fmt(entry.mediaTotal??entry.total)}</td><td>${entry.productionTotal?fmt(entry.productionTotal):entry.productionLabel||'-'}</td><td>${fmt(entry.total)}</td></tr>`).join(''):'<tr><td colspan="7" class="empty">Selecione as mídias e inclua as opções para montar a proposta.</td></tr>';
 const getPresentationMeta=()=>{
   const results=filtered(),pageCount=Math.max(1,Math.ceil(results.length/6)),detailStart=pageCount+2,summary=detailStart+results.length,summaryPageCount=Math.max(1,Math.ceil(proposal.length/6)),last=summary+summaryPageCount-1;
   return {results,pageCount,detailStart,summary,summaryPageCount,last,total:last+1};
@@ -286,13 +290,14 @@ const mediaSlide=(media,index,meta)=>{
   const gallery=isOpen&&media.variantImages?media.variantImages.map(path=>images+path):(media.gallery||[media.image]),galleryIndex=(galleryIndexes[media.id]??(isOpen?selection.variant:0))%gallery.length;
   const image=gallery[galleryIndex];
   const galleryControls=gallery.length>1?`<div class="media-gallery-controls"><button class="icon" data-gallery-shift="-1" data-gallery-media="${media.id}" aria-label="Imagem anterior">&larr;</button><span>${isOpen&&media.variantImages?'Possibilidade':media.galleryLabel||'Foto'} ${String(galleryIndex+1).padStart(2,'0')} / ${String(gallery.length).padStart(2,'0')}</span><button class="icon" data-gallery-shift="1" data-gallery-media="${media.id}" aria-label="Proxima imagem">&rarr;</button></div>`:'';
-  const variants=media.variants?`<label class="field">Possibilidades de PDV</label><div class="periods inline-options">${media.variants.map((name,variantIndex)=>`<button class="period ${(media.multiVariantSelection?selection.variants.includes(variantIndex):selection.variant===variantIndex)?'on':''}" data-inline-variant="${variantIndex}" data-media-id="${media.id}">${name}</button>`).join('')}</div>`:'';
+  const variants=media.pdvPackage?`<label class="field">Ativação de PDV</label><div class="periods inline-options"><button class="period ${selection.package?'on':''}" data-pdv-package="${media.id}">${media.pdvPackage.label} · ${fmt(media.pdvPackage.value)}</button></div>`:media.variants?`<label class="field">Possibilidades de PDV</label><div class="periods inline-options">${media.variants.map((name,variantIndex)=>`<button class="period ${(media.multiVariantSelection?selection.variants.includes(variantIndex):selection.variant===variantIndex)?'on':''}" data-inline-variant="${variantIndex}" data-media-id="${media.id}">${name}</button>`).join('')}</div>`:'';
   const services=media.serviceOptions?`<label class="field">Lona</label><div class="periods inline-options">${media.serviceOptions.map((option,serviceIndex)=>`<button class="period ${selection.service===serviceIndex?'on':''}" data-inline-service="${serviceIndex}" data-media-id="${media.id}">${option[0]} · ${fmt(option[1])}</button>`).join('')}</div>`:'';
   const installation=media.installationFee?`<label class="field">Instalação</label><div class="included-fee">${fmt(media.installationFee)} por veículo</div>`:'';
-  const selectionCount=media.multiVariantSelection?selection.variants.length:1;
-  const configuration=isOpen?`<div class="inline-config">${variants}${services}<label class="field">Periodo</label><div class="periods">${media.periods.map((value,termIndex)=>`<button class="period ${selection.term===termIndex?'on':''}" data-inline-term="${termIndex}" data-media-id="${media.id}">${value[0]}</button>`).join('')}</div>${installation}<label class="field">Quantidade</label><div class="stepper"><button data-inline-qty="-1" data-media-id="${media.id}" aria-label="Diminuir quantidade">-</button><b>${selection.qty}</b><button data-inline-qty="1" data-media-id="${media.id}" aria-label="Aumentar quantidade">+</button></div><div class="quote-preview"><span>Investimento desta selecao</span><br><strong>${fmt(selectionTotal(media,selection)*selectionCount)}</strong><br><small>${selection.qty} unidade(s) &middot; ${period[0]}${media.multiVariantSelection?` &middot; ${selectionCount} possibilidade(s)`:''}</small></div><button class="command" data-add-media="${media.id}" ${media.multiVariantSelection&&!selectionCount?'disabled':''}>${media.multiVariantSelection?'Incluir opções selecionadas':'Incluir na proposta'}</button></div>`:'';
+  const selectionCount=media.pdvPackage?(selection.package?1:0):media.multiVariantSelection?selection.variants.length:1;
+  const quantityControl=media.pdvPackage?'':`<label class="field">Quantidade</label><div class="stepper"><button data-inline-qty="-1" data-media-id="${media.id}" aria-label="Diminuir quantidade">-</button><b>${selection.qty}</b><button data-inline-qty="1" data-media-id="${media.id}" aria-label="Aumentar quantidade">+</button></div>`;
+  const configuration=isOpen?`<div class="inline-config">${variants}${services}<label class="field">Periodo</label><div class="periods">${media.periods.map((value,termIndex)=>`<button class="period ${selection.term===termIndex?'on':''}" data-inline-term="${termIndex}" data-media-id="${media.id}">${value[0]}</button>`).join('')}</div>${installation}${quantityControl}<div class="quote-preview"><span>Investimento desta selecao</span><br><strong>${fmt(selectionTotal(media,selection)*selectionCount)}</strong><br><small>${media.pdvPackage?`${media.city} · ${period[0]}`:`${selection.qty} unidade(s) &middot; ${period[0]}${media.multiVariantSelection?` &middot; ${selectionCount} possibilidade(s)`:''}`}</small></div><button class="command" data-add-media="${media.id}" ${(media.pdvPackage&&!selection.package)||(media.multiVariantSelection&&!selectionCount)?'disabled':''}>${media.pdvPackage?'Incluir ativação completa':media.multiVariantSelection?'Incluir opções selecionadas':'Incluir na proposta'}</button></div>`:'';
   const detailMeta=media.type==='PDV'?'':`<div class="detail-meta"><div><span>Formato</span><b>${media.size}</b></div><div><span>Investimento a partir de</span><b>${fmt(media.price)}</b></div></div>`;
-  return `<section class="slide"><div class="top"><p class="eyebrow">03 · MIDIA SELECIONADA</p><span>${String(index+1).padStart(2,'0')} / ${String(meta.results.length).padStart(2,'0')} · ${media.city}</span></div><div class="detail"><div class="media-image media-gallery"><img src="${image}" alt="${media.name}">${galleryControls}</div><div><span class="eyebrow">${media.city} &middot; ${media.impact}</span><h2>${media.name}</h2><p class="copy">${media.note}</p>${detailMeta}<button class="command secondary" data-back-inventory="${Math.floor(index/6)}">Voltar ao inventario</button>${isOpen?'':`<button class="command" data-open-config="${media.id}">Selecionar midia</button>`}${configuration}</div></div></section>`;
+  return `<section class="slide ${isOpen?'is-configuring':''}"><div class="top"><p class="eyebrow">03 · MIDIA SELECIONADA</p><span>${String(index+1).padStart(2,'0')} / ${String(meta.results.length).padStart(2,'0')} · ${media.city}</span></div><div class="detail"><div class="media-image media-gallery"><img src="${image}" alt="${media.name}">${galleryControls}</div><div><span class="eyebrow">${media.city} &middot; ${media.impact}</span><h2>${media.name}</h2><p class="copy">${media.note}</p>${detailMeta}<button class="command secondary" data-back-inventory="${Math.floor(index/6)}">Voltar ao inventario</button>${isOpen?'':`<button class="command" data-open-config="${media.id}">Selecionar midia</button>`}${configuration}</div></div></section>`;
 };
 render=function(){
   const meta=getPresentationMeta();
@@ -319,9 +324,10 @@ render=function(){
     const summaryPages=Array.from({length:meta.summaryPageCount},(_,page)=>proposal.slice(page*6,page*6+6));
     summaryBase.outerHTML=summaryPages.map((entries,page)=>{
       const section=summaryBase.cloneNode(true);
-      const eyebrow=section.querySelector('.top .eyebrow'),label=section.querySelector('.top span'),body=section.querySelector('tbody');
+      const eyebrow=section.querySelector('.top .eyebrow'),label=section.querySelector('.top span'),header=section.querySelector('thead tr'),body=section.querySelector('tbody');
       if(eyebrow)eyebrow.textContent=`05 · PROPOSTA COMERCIAL${meta.summaryPageCount>1?` · ${page+1}/${meta.summaryPageCount}`:''}`;
       if(label)label.textContent=meta.summaryPageCount>1?`Resumo da composição · página ${page+1}`:'Resumo da composição selecionada';
+      if(header)header.innerHTML='<th>Mídia</th><th>Praça</th><th>Período</th><th>Quantidade</th><th>Mídia</th><th>Produção</th><th>Total</th>';
       if(body)body.innerHTML=proposalRows(entries);
       return section.outerHTML;
     }).join('');
@@ -337,9 +343,10 @@ render=function(){
   document.querySelectorAll('[data-inline-term]').forEach(button=>button.onclick=()=>{mediaSelection(M.find(media=>media.id===button.dataset.mediaId)).term=+button.dataset.inlineTerm;render()});
   document.querySelectorAll('[data-inline-qty]').forEach(button=>button.onclick=()=>{const selection=mediaSelection(M.find(media=>media.id===button.dataset.mediaId));selection.qty=Math.max(1,selection.qty+(+button.dataset.inlineQty));render()});
   document.querySelectorAll('[data-inline-variant]').forEach(button=>button.onclick=()=>{const media=M.find(media=>media.id===button.dataset.mediaId),selection=mediaSelection(media),variantIndex=+button.dataset.inlineVariant;selection.variant=variantIndex;galleryIndexes[media.id]=variantIndex;if(media.multiVariantSelection)selection.variants=selection.variants.includes(variantIndex)?selection.variants.filter(index=>index!==variantIndex):[...selection.variants,variantIndex];render()});
+  document.querySelectorAll('[data-pdv-package]').forEach(button=>button.onclick=()=>{const media=M.find(media=>media.id===button.dataset.pdvPackage),selection=mediaSelection(media);selection.package=!selection.package;render()});
   document.querySelectorAll('[data-inline-service]').forEach(button=>button.onclick=()=>{mediaSelection(M.find(media=>media.id===button.dataset.mediaId)).service=+button.dataset.inlineService;render()});
   document.querySelectorAll('[data-gallery-shift]').forEach(button=>button.onclick=()=>{const media=M.find(item=>item.id===button.dataset.galleryMedia),gallery=openConfigMediaId===media.id&&media.variantImages?media.variantImages:(media.gallery||[media.image]);galleryIndexes[media.id]=((galleryIndexes[media.id]??0)+(+button.dataset.galleryShift)+gallery.length)%gallery.length;render()});
-  document.querySelectorAll('[data-add-media]').forEach(button=>button.onclick=()=>{const media=M.find(item=>item.id===button.dataset.addMedia),selection=mediaSelection(media),period=media.periods[selection.term],variantIndexes=media.multiVariantSelection?selection.variants:[selection.variant];variantIndexes.forEach(variantIndex=>{const id=media.variants?`${media.id}-${variantIndex}`:media.id,name=media.variants?`${media.name} - ${media.variants[variantIndex]}`:selectionName(media,selection);proposal=proposal.filter(entry=>entry.id!==id);proposal.push({id,name,city:media.city,period:period[0],qty:selection.qty,total:selectionTotal(media,selection)});});openConfigMediaId='';presentationSlide=meta.summary;render()});
+  document.querySelectorAll('[data-add-media]').forEach(button=>button.onclick=()=>{const media=M.find(item=>item.id===button.dataset.addMedia),selection=mediaSelection(media),period=media.periods[selection.term],variantIndexes=media.pdvPackage?[null]:media.multiVariantSelection?selection.variants:[selection.variant];variantIndexes.forEach(variantIndex=>{const id=media.pdvPackage?media.id:media.variants?`${media.id}-${variantIndex}`:media.id,name=media.pdvPackage?selectionName(media,selection):media.variants?`${media.name} - ${media.variants[variantIndex]}`:selectionName(media,selection),costs=selectionCosts(media,selection);proposal=proposal.filter(entry=>entry.id!==id);proposal.push({id,name,city:media.city,period:period[0],qty:media.pdvPackage?1:selection.qty,mediaTotal:costs.media,productionTotal:costs.production,total:costs.total});});openConfigMediaId='';presentationSlide=meta.summary;render()});
   prev.onclick=()=>go(presentationSlide-1);
   next.onclick=()=>go(presentationSlide+1);
   counter.textContent=`${String(presentationSlide+1).padStart(2,'0')} / ${String(meta.total).padStart(2,'0')}`;
@@ -369,20 +376,22 @@ const cianorteExtras=[
   {id:'cia-praca',name:'Front Light com Iluminacao',city:'Cianorte',type:'Outdoor',price:1400,unit:'mes',periods:[['1 mes',1,1400],['3 meses',3,1400],['12 meses',12,1400]],note:'Praca Makio Sato com Av. Atlantica.',image:images+'cianorte/outdoor/outdoor-cianorte-praca-makio-sato-indisponivel.jpeg',size:'7,5 x 2,7 m',impact:'Outdoor iluminado'}
 ];
 cianorteExtras.forEach(media=>{if(!M.some(item=>item.id===media.id))M.push(media)});
+const standardOutdoorProduction=[['Produzir lona',1400],['Só instalar lona',250]];
+M.filter(media=>media.type==='Outdoor').forEach(media=>{if(!media.serviceOptions)media.serviceOptions=standardOutdoorProduction});
 const renderWithFinalTouches=render;
 render=function(){
   renderWithFinalTouches();
   document.querySelectorAll('[data-add-media]').forEach(button=>button.onclick=()=>{
-    const media=M.find(item=>item.id===button.dataset.addMedia),selection=mediaSelection(media),period=media.periods[selection.term],variantIndexes=media.multiVariantSelection?selection.variants:[selection.variant];
+    const media=M.find(item=>item.id===button.dataset.addMedia),selection=mediaSelection(media),period=media.periods[selection.term],variantIndexes=media.pdvPackage?[null]:media.multiVariantSelection?selection.variants:[selection.variant];
     variantIndexes.forEach(variantIndex=>{
-      const id=media.variants?`${media.id}-${variantIndex}`:media.id,name=media.variants?`${media.name} - ${media.variants[variantIndex]}`:selectionName(media,selection);
+      const id=media.pdvPackage?media.id:media.variants?`${media.id}-${variantIndex}`:media.id,name=media.pdvPackage?selectionName(media,selection):media.variants?`${media.name} - ${media.variants[variantIndex]}`:selectionName(media,selection),costs=selectionCosts(media,selection);
       proposal=proposal.filter(entry=>entry.id!==id);
-      proposal.push({id,name,city:media.city,period:period[0],qty:selection.qty,total:selectionTotal(media,selection)});
+      proposal.push({id,name,city:media.city,period:period[0],qty:media.pdvPackage?1:selection.qty,mediaTotal:costs.media,productionTotal:costs.production,total:costs.total});
     });
     button.disabled=true;button.innerHTML='&check; Incluida na proposta';button.insertAdjacentHTML('afterend','<span class="proposal-confirmation">Item confirmado na proposta.</span>');
   });
 };
 render();
-</script><style>@media print{@page{size:13.333in 7.5in;margin:0}}</style><script>
+</script><style>.deck{container-type:inline-size}@container (max-width:1200px){.slide{padding:5.5% 7%}h1{font-size:5.1cqw;margin-bottom:1.4cqw}h2{font-size:4cqw;margin-bottom:1.1cqw}.logo{width:13cqw;padding:.45cqw .8cqw;margin-bottom:1.8cqw}.eyebrow{font-size:.75cqw;margin-bottom:.7cqw}.copy{font-size:1.28cqw;line-height:1.42}.top{padding-bottom:1cqw;margin-bottom:3cqw;font-size:.9cqw}.filter-block{margin:1.4cqw 0}.filter-label{font-size:.75cqw;margin-bottom:.65cqw}.toggles{gap:.7cqw}.toggle{padding:.8cqw 1cqw;font-size:1cqw}.filters,.detail{gap:5%}.detail{align-items:center}.media-image{height:min(40cqw,48vh);max-height:none;align-self:center}.slide.is-configuring .detail-meta{display:none}.inventory-head{margin-bottom:1.8cqw}.inventory-head p{font-size:1cqw}.grid{gap:1cqw}.card{min-height:14.5cqw}.card img{height:6.4cqw}.card-body{padding:1cqw}.card h3{font-size:1.2cqw;margin:.4cqw 0}.card p{font-size:.86cqw;margin-bottom:.7cqw}.card strong{font-size:1.35cqw}.detail-meta{gap:1.6cqw;margin:1.4cqw 0}.detail-meta div{padding-left:.65cqw;font-size:.9cqw}.detail-meta b{font-size:1.4cqw}.command{padding:1cqw 1.4cqw;font-size:1cqw}.field{font-size:.74cqw;margin:.9cqw 0 .45cqw}.periods{gap:.55cqw}.period{padding:.75cqw .9cqw;font-size:.95cqw}.inline-config{margin-top:1.2cqw;padding-top:1cqw}.inline-config .field{margin-top:.8cqw}.inline-config .quote-preview{margin-top:.9cqw;padding:1cqw}.inline-config .quote-preview strong{font-size:2cqw}.stepper{gap:.7cqw;padding:.3cqw}.stepper button{width:2.3cqw;height:2.3cqw;font-size:1.45cqw}.quote-preview{margin-top:1.4cqw;padding:1.2cqw}.quote-preview strong{font-size:2.4cqw}.media-gallery-controls{left:1cqw;right:1cqw;bottom:1cqw;height:3.3cqw}.media-gallery-controls .icon{width:3.3cqw;height:3.3cqw;min-height:3.3cqw;font-size:1.5cqw}.media-gallery-controls span{font-size:.8cqw}.included-fee{min-height:3cqw;padding:.65cqw .9cqw;font-size:.9cqw}}@container (max-width:1050px){h2{font-size:3.55cqw}.copy{font-size:1.18cqw}.inline-options .period{padding:.62cqw .75cqw;font-size:.83cqw}.top{margin-bottom:2.2cqw}.proposal-confirmation{font-size:.8cqw}}</style><style>@media print{@page{size:13.333in 7.5in;margin:0}}</style><script>
 document.getElementById('print').onclick=()=>window.print();
-</script></body></html>
+</script><style>@container (max-width:1200px){.slide.is-configuring .copy{display:none}}</style></body></html>
