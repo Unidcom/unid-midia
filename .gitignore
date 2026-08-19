@@ -3,3 +3,6 @@ calculadora-unidmidia/.tmp-*.png
 calculadora-unidmidia/tmp-*.jpg
 calculadora-unidmidia/tmp-*.png
 calculadora-unidmidia/transcricao.txt
+*.pdf
+calculadora-unidmidia/docs/referencias/
+calculadora-unidmidia/docs/catalogos-md/
