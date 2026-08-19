@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Base de precificacao para a calculadora de midias.
+  Valores usam ponto decimal e sao unitarios em BRL.
+  Para cadastrar uma nova midia, copie um no em <midias>, altere o id e
+  preencha cidade, tipo, precos e fonte. Campos com status="pendente" nao
+  devem aparecer como cotaveis ate a revisao comercial.
+-->
+<catalogo-midias versao="1.0" moeda="BRL" atualizado-em="2026-08-18">
+  <fontes>
+    <fonte id="outdoor-umuarama-2026" arquivo="OUTDOOR 2026 umuarama valores.md" />
+    <fonte id="pontos-outdoor-umuarama" arquivo="Outdoor Umuarama.md" />
+    <fonte id="rede-cianorte" arquivo="Outdoor Cianorte Bissemana.md" />
+    <fonte id="rede-cianorte-duplicada" arquivo="Outdoor Umuarama rede.md" duplicada-de="rede-cianorte" />
+    <fonte id="busdoor-umuarama" arquivo="busdoor Umuarama .md" extracao="ocr" />
+    <fonte id="led-super-tela" arquivo="Proposta  - LED SUPER TELA - Av. Paraná - 2025 - umuarama.md" />
+    <fonte id="led-leblon" arquivo="Proposta  - LED SUPER TELA - Posto Leblon - umuarama.md" />
+    <fonte id="led-avenida" arquivo="Proposta  - PAINEL DE LED - Posto Avenida 2024 - umuarama.md" />
+    <fonte id="led-itamaraty" arquivo="Proposta  - PAINEL DE LED - Posto Itamaraty 2024 - umuarama.md" />
+    <fonte id="trade-goioere" arquivo="PARANÁ _ PROPOSTA_Mídia_goioerê.md" />
+    <fonte id="cianorte-prototipus-1" arquivo="Outdoor Cianorte 1.jpeg" extracao="ocr-e-revisao-visual" />
+    <fonte id="cianorte-prototipus-2" arquivo="Outdoor Cianorte 2.jpeg" extracao="ocr-e-revisao-visual" />
+    <fonte id="cianorte-prototipus-3" arquivo="Outdoor Cianorte 3.jpeg" extracao="ocr-e-revisao-visual" />
+    <fonte id="cianorte-prototipus-4" arquivo="Outdoor Cianorte 4.jpeg" extracao="ocr-e-revisao-visual" />
+    <fonte id="cianorte-prototipus-5" arquivo="Outdoor Cianorte 5.jpeg" extracao="ocr-e-revisao-visual" />
+  </fontes>
+
+  <midias>
+    <midia id="outdoor-umuarama" tipo="outdoor" cidade="Umuarama" ativo="true" fonte="outdoor-umuarama-2026">
+      <nome>Outdoor 9 x 3 m</nome>
+      <formato largura-m="9" altura-m="3" />
+      <precos>
+        <preco codigo="veiculacao-14-dias" descricao="Veiculacao por bi-semana" unidade="bi-semana" quantidade="1" valor="490.00" />
+        <preco codigo="veiculacao-28-dias" descricao="Veiculacao por duas bi-semanas" unidade="bi-semana" quantidade="2" valor="980.00" />
+        <adicional codigo="producao-papel" descricao="Producao de papel" unidade="unidade" valor="280.00" />
+        <adicional codigo="producao-lona-instalada" descricao="Producao de lona instalada" unidade="unidade" valor="1400.00" />
+        <adicional codigo="instalacao-lona-pronta" descricao="Instalacao de lona fornecida pelo cliente" unidade="unidade" valor="250.00" />
+      </precos>
+      <pontos fonte="pontos-outdoor-umuarama">
+        <ponto id="um-out-01">Rodovia saida de Serra dos Dourados, sentido Umuarama</ponto>
+        <ponto id="um-out-02">Avenida Aracaju, proximo a UEM e Mercado Atacadao</ponto>
+        <ponto id="um-out-03">Rodovia PR-323, em frente a Levo Alimentos, entrada da cidade sentido Mariluz</ponto>
+        <ponto id="um-out-04">Avenida Parigot de Souza, em frente a feira de domingo</ponto>
+        <ponto id="um-out-05">Rua Arapongas, em frente ao Deposito Sao Jose</ponto>
+        <ponto id="um-out-06">Avenida Ariovaldo, sentido cidade</ponto>
+        <ponto id="um-out-07">Avenida Manaus, ao lado do Mercado Amigao</ponto>
+        <ponto id="um-out-08">Avenida Jose Dias Lopes, sentido UOPECAN, proximo a Sorveteria d'Italia</ponto>
+        <ponto id="um-out-09">Avenida Antonio Ostrenski, proximo ao Hospital Cemil</ponto>
+        <ponto id="um-out-10">Avenida Ariovaldo Rodrigues, proximo ao Max Atacado, sentido centro</ponto>
+        <ponto id="um-out-11">Avenida Parana, proximo ao Lago Municipal, sentido UOPECAN e Shopping</ponto>
+        <ponto id="um-out-12">Avenida Ariovaldo Rodrigues de Moraes, proximo ao Max, sentido rodovia</ponto>
+        <ponto id="um-out-13">Avenida Angelo Moreira, proximo a Delegacia, UPA e Sicoob</ponto>
+        <ponto id="um-out-14">Avenida Parigot de Souza com Avenida Guanabara, proximo ao Posto Pinheirao</ponto>
+        <ponto id="um-out-15">Avenida Paranapanema, proximo ao Tiro de Guerra</ponto>
+        <ponto id="um-out-16">Avenida Parana, em frente ao Lago Municipal, sentido Faculdade Alfa</ponto>
+        <ponto id="um-out-17">Rotatoria sentido ACEU, Guri, entrada da cidade</ponto>
+        <ponto id="um-out-18">Avenida Paulo Pedrosa, proximo a Sorveteria d'Italia, sentido Atacadao e UOPECAN</ponto>
+        <ponto id="um-out-19">Rodovia Serra x Umuarama, proximo ao Parque da Jaboticabeira</ponto>
+        <ponto id="um-out-20">Avenida Parigot de Souza, proximo ao Alfinha, Mont Blanc Residencial</ponto>
+        <ponto id="um-out-21">Avenida Ariovaldo Rodrigues, entrada da cidade, Max Atacado e Parque Cidade Jardim</ponto>
+        <ponto id="um-out-22">Avenida Celso Garcia Cid, proximo ao Hospital Cemil</ponto>
+        <ponto id="um-out-23">Avenida Angelo Moreira, em frente a UEM</ponto>
+        <ponto id="um-out-24">Avenida Maringa, sentido UNIPAR, proximo a Lamore</ponto>
+        <ponto id="um-out-25">Rua Arapongas, sentido Colegio Alfa, proximo ao Posto Portuga</ponto>
+        <ponto id="um-out-26">Avenida Pirapo com Avenida Rolandia, proximo a UNIPAR</ponto>
+        <ponto id="um-out-27">Estrada saida Xambre, proximo ao ACEU e Sorvetes Guri</ponto>
+        <ponto id="um-out-28">Avenida Parana, Shopping x Centro, Estrada para Xambre</ponto>
+      </pontos>
+    </midia>
+
+    <midia id="busdoor-umuarama" tipo="busdoor" cidade="Umuarama" ativo="true" fonte="busdoor-umuarama" revisao-comercial="necessaria">
+      <nome>Busdoor Umuarama</nome>
+      <precos>
+        <preco codigo="veiculacao-mensal" descricao="Veiculacao por carro por mes" unidade="carro-mes" valor="650.00" />
+        <adicional codigo="instalacao" descricao="Instalacao por carro" unidade="carro" valor="550.00" />
+      </precos>
+      <observacao>Valores extraidos por OCR; confirmar com o fornecedor antes da publicacao.</observacao>
+    </midia>
+
+    <midia id="led-super-tela-av-parana" tipo="painel-led" cidade="Umuarama" ativo="true" fonte="led-super-tela">
+      <nome>Super Tela - Av. Parana</nome>
+      <localizacao>Av. Parana, 7181, em frente ao Condominio Soleil</localizacao>
+      <formato largura-m="4.5" altura-m="2.5" faces-maximas="2" />
+      <exibicao insercoes-dia="270" horas-dia="17" />
+      <precos multiplicador="faces">
+        <preco codigo="1-mes" descricao="1 mes, por face" unidade="face-mes" meses="1" valor="1250.00" />
+        <preco codigo="3-meses" descricao="3 meses, por face" unidade="face-mes" meses="3" valor="1050.00" />
+        <preco codigo="12-meses" descricao="12 meses, por face" unidade="face-mes" meses="12" valor="750.00" />
+        <adicional codigo="producao-vt" descricao="Producao de VT" unidade="unidade" valor="250.00" />
+      </precos>
+    </midia>
+
+    <midia id="led-posto-leblon" tipo="painel-led" cidade="Umuarama" ativo="true" fonte="led-leblon">
+      <nome>Painel de LED - Posto Leblon</nome>
+      <localizacao>Av. Parana com Praca Miguel Rossafa</localizacao>
+      <formato largura-m="5" altura-m="1.1" />
+      <exibicao horas-dia="16" insercoes-dia="250" duracao-segundos="15" />
+      <precos>
+        <preco codigo="1-mes" unidade="mes" meses="1" valor="690.00" />
+        <preco codigo="3-meses" unidade="mes" meses="3" valor="590.00" />
+        <preco codigo="12-meses" unidade="mes" meses="12" valor="490.00" />
+        <adicional codigo="producao-vt" descricao="Producao de VT" unidade="unidade" valor="250.00" />
+      </precos>
+    </midia>
+
+    <midia id="led-posto-avenida" tipo="painel-led" cidade="Umuarama" ativo="true" fonte="led-avenida">
+      <nome>Painel de LED - Posto Avenida</nome>
+      <localizacao>Av. Brasil com Av. Ipiranga</localizacao>
+      <formato largura-m="4.4" altura-m="1.1" />
+      <exibicao horas-dia="16" />
+      <precos>
+        <preco codigo="1-mes" unidade="mes" meses="1" valor="590.00" />
+        <preco codigo="3-meses" unidade="mes" meses="3" valor="490.00" />
+        <preco codigo="12-meses" unidade="mes" meses="12" valor="390.00" />
+        <adicional codigo="producao-vt" descricao="Producao de VT" unidade="unidade" valor="250.00" />
+      </precos>
+    </midia>
+
+    <midia id="led-posto-itamaraty" tipo="painel-led" cidade="Umuarama" ativo="true" fonte="led-itamaraty">
+      <nome>Painel de LED - Posto Itamaraty</nome>
+      <localizacao>Av. Parana com Av. Apucarana</localizacao>
+      <formato largura-m="4.4" altura-m="1.1" />
+      <exibicao horas-dia="16" />
+      <precos>
+        <preco codigo="1-mes" unidade="mes" meses="1" valor="590.00" />
+        <preco codigo="3-meses" unidade="mes" meses="3" valor="490.00" />
+        <preco codigo="12-meses" unidade="mes" meses="12" valor="390.00" />
+        <adicional codigo="producao-vt" descricao="Producao de VT" unidade="unidade" valor="250.00" />
+      </precos>
+    </midia>
+
+    <midia id="pdv-mercado-goioere" tipo="pdv" cidade="Multicidades" ativo="true" fonte="trade-goioere">
+      <nome>PDV - Mercado</nome>
+      <cidades>
+        <cidade>Campo Mourao</cidade>
+        <cidade>Assis Chateaubriand</cidade>
+        <cidade>Cianorte</cidade>
+        <cidade>Goioere</cidade>
+        <cidade>Ivaipora</cidade>
+        <cidade>Pitanga</cidade>
+        <cidade>Ubirata</cidade>
+      </cidades>
+      <precos>
+        <preco codigo="faixa-gradil" descricao="Faixa gradil" unidade="unidade" dias="60" valor="1.00" />
+        <preco codigo="totem-entrada" descricao="Totem entrada" unidade="unidade" dias="60" valor="1.00" />
+        <preco codigo="display-manopla" descricao="Display de manopla" unidade="unidade" dias="60" valor="1.00" />
+        <preco codigo="adesivo-cesta-compras" descricao="Adesivo cesta de compras" unidade="unidade" dias="60" valor="1.00" />
+        <preco codigo="adesivo-saida-piso" descricao="Adesivo saida piso" unidade="unidade" dias="60" valor="1.00" />
+        <preco codigo="adesivo-mesa-cafeteria" descricao="Adesivo mesa cafeteria" unidade="unidade" dias="60" valor="1.00" />
+      </precos>
+      <condicoes>
+        <condicao>Periodo minimo de 60 dias.</condicao>
+        <condicao>Valores provisoriamente cadastrados como R$ 1,00 por unidade.</condicao>
+      </condicoes>
+    </midia>
+
+    <midia id="outdoor-cianorte-prototipus-01" tipo="outdoor" cidade="Cianorte" ativo="true" disponibilidade="disponivel" fonte="cianorte-prototipus-1">
+      <nome>Front com Iluminacao - Av. Makio Sato</nome>
+      <localizacao>Av. Makio Sato, Atlantico - entrando</localizacao>
+      <formato largura-m="9" altura-m="3" area-m2="27" />
+      <precos>
+        <preco codigo="veiculacao-mensal" descricao="Valor mensal do anuncio" unidade="mes" meses="1" valor="1100.00" />
+      </precos>
+    </midia>
+
+    <midia id="outdoor-cianorte-prototipus-02" tipo="outdoor" cidade="Cianorte" ativo="true" disponibilidade="disponivel" fonte="cianorte-prototipus-2">
+      <nome>Front com Iluminacao - Av. Espirito Santo</nome>
+      <localizacao>Av. Espirito Santo, cruzamento com Av. Allan Kardec</localizacao>
+      <formato largura-m="9" altura-m="3" area-m2="27" />
+      <precos>
+        <preco codigo="veiculacao-mensal" descricao="Valor mensal do anuncio" unidade="mes" meses="1" valor="1300.00" />
+      </precos>
+    </midia>
+
+    <midia id="outdoor-cianorte-prototipus-03" tipo="outdoor" cidade="Cianorte" ativo="false" disponibilidade="indisponivel" fonte="cianorte-prototipus-3">
+      <nome>Front Light - Av. Parana</nome>
+      <localizacao>Av. Parana, em frente ao Banco do Brasil</localizacao>
+      <formato largura-m="5" altura-m="4.5" area-m2="22.5" />
+      <precos>
+        <preco codigo="veiculacao-mensal" descricao="Valor mensal do anuncio" unidade="mes" meses="1" valor="1500.00" />
+      </precos>
+      <observacao>Indisponivel conforme imagem de referencia.</observacao>
+    </midia>
+
+    <midia id="outdoor-cianorte-prototipus-04" tipo="outdoor" cidade="Cianorte" ativo="false" disponibilidade="indisponivel" fonte="cianorte-prototipus-4">
+      <nome>Front Light com Iluminacao - Av. Genei Uehara</nome>
+      <localizacao>Avenida Genei Uehara, Jardim Universitario</localizacao>
+      <formato largura-m="9" altura-m="4" area-m2="36" />
+      <precos>
+        <preco codigo="veiculacao-mensal" descricao="Valor mensal do anuncio" unidade="mes" meses="1" valor="1000.00" />
+      </precos>
+      <observacao>Indisponivel conforme imagem de referencia.</observacao>
+    </midia>
+
+    <midia id="outdoor-cianorte-prototipus-05" tipo="outdoor" cidade="Cianorte" ativo="false" disponibilidade="indisponivel" fonte="cianorte-prototipus-5">
+      <nome>Front Light com Iluminacao - Praca Makio Sato</nome>
+      <localizacao>Praca Makio Sato, com Av. Atlantica</localizacao>
+      <formato largura-m="7.5" altura-m="2.7" area-m2="20.25" />
+      <precos>
+        <preco codigo="veiculacao-mensal" descricao="Valor mensal do anuncio" unidade="mes" meses="1" valor="1400.00" />
+      </precos>
+      <observacao>Indisponivel conforme imagem de referencia.</observacao>
+    </midia>
+
+    <midia id="outdoor-cianorte-rede" tipo="outdoor" cidade="Cianorte" ativo="false" fonte="rede-cianorte" preco-status="pendente">
+      <nome>Outdoor Rede - Cianorte</nome>
+      <formato largura-m="9" altura-m="3" />
+      <periodo unidade="bi-semana" referencia="38-2026" inicio="2026-09-07" fim="2026-09-20" />
+      <pontos>
+        <ponto id="ci-out-403" codigo-fornecedor="403">Zona 03, Rodovia PR-323, sentido Cianorte</ponto>
+        <ponto id="ci-out-404" codigo-fornecedor="404">Zona 03, Rodovia PR-323, sentido Maringa</ponto>
+        <ponto id="ci-out-405" codigo-fornecedor="405">Zona 06, Av. America com Av. Brasilia, centro</ponto>
+      </pontos>
+      <observacao>O catalogo informa os pontos, mas nao traz valores. Preencher os precos antes de ativar.</observacao>
+    </midia>
+  </midias>
+</catalogo-midias>
